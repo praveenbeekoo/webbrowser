@@ -1,0 +1,40 @@
+name: Build (Windows)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '5.0.x'
+
+    - name: Restore NuGet packages
+      run: dotnet restore "webbrowser/WebBrowserThinClient.sln"
+
+    - name: Build solution
+      run: dotnet build "webbrowser/WebBrowserThinClient.sln" --configuration Release --no-restore
+
+    - name: Publish artifact
+      run: |
+        dotnet publish "webbrowser/src/WebBrowserThinClient/WebBrowserThinClient.csproj" -c Release -o ./publish --no-build
+
+    - name: Zip publish output
+      run: |
+        powershell -Command "Compress-Archive -Path ./publish/* -DestinationPath ./WebBrowserThinClient-publish.zip -Force"
+
+    - name: Upload build artifact (zip)
+      uses: actions/upload-artifact@v4
+      with:
+        name: WebBrowserThinClient-publish
+        path: ./WebBrowserThinClient-publish.zip
