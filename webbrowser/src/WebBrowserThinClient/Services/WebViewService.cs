@@ -1,4 +1,4 @@
-using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Threading.Tasks;
 
@@ -6,9 +6,9 @@ namespace WebBrowserThinClient.Services
 {
     public class WebViewService
     {
-        private readonly CoreWebView2 _webView;
+        private readonly WebView2 _webView;
 
-        public WebViewService(CoreWebView2 webView)
+        public WebViewService(WebView2 webView)
         {
             _webView = webView;
         }
@@ -17,7 +17,7 @@ namespace WebBrowserThinClient.Services
         {
             if (_webView != null)
             {
-                await _webView.EnsureCoreWebView2Async();
+                await _webView.EnsureCoreWebView2Async(null);
                 _webView.Source = new Uri(url);
             }
             else
